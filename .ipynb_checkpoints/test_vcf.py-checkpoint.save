@@ -1,0 +1,27 @@
+#!/usr/bin/python3w
+import vcf
+
+def extract_cnv_values_from_vcf(vcf_file_path):
+    """
+    Extract CNV values for each chromosome from a VCF file and print them.
+
+    Args:
+    vcf_file_path (str): Path to the VCF file.
+
+    Returns:
+    None
+    """
+    # Open the VCF file
+    with vcf.Reader(filename=vcf_file_path) as vcf_reader:
+        # Iterate through each record in the VCF file
+        for record in vcf_reader:
+            # Check if the INFO field contains 'SVTYPE' as 'CNV'
+            if 'SVTYPE' in record.INFO and record.INFO['SVTYPE'] == 'CNV':
+                chromosome = record.CHROM
+                cnv_value = record.INFO['END']  # Extract CNV value from the 'END' field
+                print(f"Chromosome {chromosome}: CNV Value {cnv_value}")
+
+# Example usage:
+vcf_file_path = 'path/to/your.vcf'
+extract_cnv_values_from_vcf(vcf_file_path)
+

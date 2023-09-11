@@ -50,8 +50,10 @@ def read_vcf(vcf_file:list):
                 start_position = record.POS
                 end_position = record.INFO['END']
                 length = end_position - start_position
-                ploidy = record.genotype(record.samples[0].sample)['CN']  # Extract ploidy from the first sample                
+                ploidy = record.genotype(record.samples[0].sample)['CN']  # Extract ploidy from the first sample
+                #print(ploidy)
                 out.append([chromosome, start_position, end_position, ploidy])
+                #print(out)
         cols = ['chromosome','start','end','ploidy']
         df = pd.DataFrame(out, columns=cols)
         
@@ -59,7 +61,7 @@ def read_vcf(vcf_file:list):
         df['length'] = df['end'] - df['start']
         dfo.append(df)
     df = pd.concat(dfo)
-    cols = ['start','end','ploidy']
+    cols = ['start','end']
     for c in cols:
         df[c] = df[c].astype(int)
     return df

@@ -3,28 +3,24 @@
 import vcf
 import pandas as pd
 import numpy as np
-import argparse
+import argparse #parses command line inputs
 
-def read_cytoband(cytoband_file:list):
+def read_cytoband(cytoband_file:str):
     """
-    Read cytoband information from the cytoband.txt file and store it in a dictionary.
+    Read cytoband information from the cytoband.txt file and store it in a pandas dataframe.
 
     Args:
-        cytoband_files (list): List of cytoband files
+        cytoband_file: name of cytoband file
 
     Returns:
         pandas dataframe containing cytoband information
     """
-    out = []
-    for fname in cytoband_file:
-        with open(fname, 'r') as file:
-            text = file.read()
-        text = text.split('\n')
-        text = [t.split('\t') for t in text]
-        cols = ['chromosome','start','end','band','stain']
-        df = pd.DataFrame(text, columns=cols)
-        out.append(df)
-    df = pd.concat(out)
+    with open(cytoband_file, 'r') as file:
+        text = file.read()
+    text = text.split('\n')
+    text = [t.split('\t') for t in text]
+    cols = ['chromosome','start','end','band','stain']
+    df = pd.DataFrame(text, columns=cols)
     df = df.dropna()
     cols = ['start','end']
     for c in cols:
@@ -112,15 +108,15 @@ def run(args):
         out.append(find_cytoband_range(chr, start, end, cyto))
     df['cytoband'] = out
     #print(df)
-    df = df.drop(columns=['filename','start','end'])
-    cols = ['chromosome','length','ploidy','cytoband']
+    #df = df.drop(columns=['filename','start','end'])
+    cols = ['chromosome','start','end','length','ploidy','cytoband']
     df[cols].to_csv(args.outfile, index=False, sep='\t')
 
 def main():
     parser = argparse.ArgumentParser(description='Merges vcf information with cytoband information')
     parser.add_argument('-i', dest='infile', type=str, nargs='+', help='vcf files')
-    parser.add_argument('-c', dest='cytoband', type=str, nargs='+', help='cytoband files')
-    parser.add_argument('-o', dest='outfile', type=str, help='cytoband files')
+    parser.add_argument('-c', dest='cytoband', type=str, help='cytoband file')
+    parser.add_argument('-o', dest='outfile', type=str, help='output file name')
 
     # parse arguments
     args = parser.parse_args()
